@@ -132,8 +132,7 @@ def analyzeWrapper(req, trx_id = 0):
 def get_emotions():
 
 	req = request.get_json()
-	counter= '{"angry": 0, "disgust": 0, "fear":0, "happy": 0, "sad": 0, "surprise": 0, "neutral": 0 }'
-	resp_object= json.loads(counter)
+	resp_object= jsonify({})
 	
 	if 'product_slug' in list(req.keys()):
 		jsonRedis= r.get(req['product_slug'])
