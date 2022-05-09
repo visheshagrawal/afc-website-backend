@@ -311,11 +311,13 @@ def representWrapper(req, trx_id = 0):
 	return resp_obj
 
 if __name__ == '__main__':
-	parser = argparse.ArgumentParser()
-	parser.add_argument(
-		'-p', '--port',
-		type=int,
-		default=5000,
-		help='Port of serving api')
-	args = parser.parse_args()
-	app.run(host='0.0.0.0', port=args.port)
+	from waitress import serve
+	serve(app, host= "0.0.0.0", port= 5000)
+	# parser = argparse.ArgumentParser()
+	# parser.add_argument(
+	# 	'-p', '--port',
+	# 	type=int,
+	# 	default=5000,
+	# 	help='Port of serving api')
+	# args = parser.parse_args()
+	# app.run(host='0.0.0.0', port=args.port)
