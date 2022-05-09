@@ -1,3 +1,8 @@
+import json
+import redis
+
+r= redis.Redis(host= 'localhost', port= 6379, db= 0)
+
 import warnings
 warnings.filterwarnings("ignore")
 
@@ -90,7 +95,7 @@ def analyzeWrapper(req, trx_id = 0):
 
 	detector_backend = 'opencv'
 
-	actions= ['emotion', 'age', 'gender', 'race']
+	actions= ['emotion']
 
 	if "actions" in list(req.keys()):
 		actions = req["actions"]
@@ -106,9 +111,34 @@ def analyzeWrapper(req, trx_id = 0):
 		print("Exception: ", str(err))
 		return jsonify({'success': False, 'error': str(err)}), 205
 
-	#---------------
-	#print(resp_obj)
+	if "product_slug" in list(req.keys()):
+		product_id= req['product_slug']
+		counter= r.get(product_id)
+		print('Product', product_id)
+		print('Counter', counter)
+		if not counter:
+			counter= '{"angry": 0, "disgust": 0, "fear":0, "happy": 0, "sad": 0, "surprise": 0, "neutral": 0 }'
+		counter= json.loads(counter)
+		counter[resp_obj['instance_1']['dominant_emotion']]+= 1
+		r.set(product_id, json.dumps(counter))
+	
+	# ---------------
+	# print(resp_obj)
 	return resp_obj
+
+@app.route('/get_emotions', methods=['POST'])
+def get_emotions():
+
+	req = request.get_json()
+	resp_object= jsonify({})
+	
+	if 'product_slug' in list(req.keys()):
+		jsonRedis= r.get(req['product_slug'])
+		if jsonRedis:
+			resp_object= json.loads(jsonRedis)
+	
+	return resp_object, 200
+
 
 @app.route('/verify', methods=['POST'])
 def verify():
