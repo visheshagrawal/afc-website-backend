@@ -12,6 +12,7 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 #------------------------------
 
 from flask import Flask, jsonify, request, make_response
+from flask_cors import CORS
 
 import argparse
 import uuid
@@ -37,6 +38,7 @@ from deepface import DeepFace
 #------------------------------
 
 app = Flask(__name__)
+CORS(app)
 
 #------------------------------
 
@@ -130,7 +132,8 @@ def analyzeWrapper(req, trx_id = 0):
 def get_emotions():
 
 	req = request.get_json()
-	resp_object= jsonify({})
+	counter= '{"angry": 0, "disgust": 0, "fear":0, "happy": 0, "sad": 0, "surprise": 0, "neutral": 0 }'
+	resp_object= json.loads(counter)
 	
 	if 'product_slug' in list(req.keys()):
 		jsonRedis= r.get(req['product_slug'])
